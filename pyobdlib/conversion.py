@@ -27,6 +27,8 @@ def to_int(str):
     """Convert the code (hex string) into an integer"""
     #i = eval("0x" + str, {}, {})
     #return i
+    if str == '':
+        return 0
     return int(str, 16)
     
 def to_bitstring(str):
