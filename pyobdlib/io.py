@@ -21,52 +21,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###########################################################################
 
-import serial
 import string
 import time
-from math import ceil
-from datetime import datetime
 
-from .sensors import SENSORS
+import serial
+
 from .conversion import to_int
 from .debug import debug_display
+from .sensors import SENSORS
+
 
 GET_DTC_COMMAND = "03"
 CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
-
-#__________________________________________________________________________
-
-
-def decrypt_dtc_code(code):
-    """Returns the 5-digit DTC code from hex encoding"""
-    dtc = []
-    current = code
-    for i in range(0, 3):
-        if len(current) < 4:
-            raise "Tried to decode bad DTC: %s" % code
-
-        tc = fhex_to_int(current[0])  # typecode
-        tc = tc >> 2
-        if tc == 0:
-            type = "P"
-        elif tc == 1:
-            type = "C"
-        elif tc == 2:
-            type = "B"
-        elif tc == 3:
-            type = "U"
-        else:
-            raise tc
-
-        dig1 = str(to_int(current[0]) & 3)
-        dig2 = str(to_int(current[1]))
-        dig3 = str(to_int(current[2]))
-        dig4 = str(to_int(current[3]))
-        dtc.append(type + dig1 + dig2 + dig3 + dig4)
-        current = current[4:]
-    return dtc
-#__________________________________________________________________________
 
 
 class OBDDevice:
