@@ -21,35 +21,38 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###########################################################################
 
+from logging import getLogger
 import string
 import time
 
 import serial
 
 from .conversion import to_int
-from .debug import debug_display
 from .sensors import SENSORS
 
 
 GET_DTC_COMMAND = "03"
+
 CLEAR_DTC_COMMAND = "04"
+
 GET_FREEZE_DTC_COMMAND = "07"
 
 
-class OBDDevice:
 
-    """OBDDevice abstracts all communication with OBD-II device."""
 
-    def __init__(self, serial_port, _notify_window, SERTIMEOUT, RECONNATTEMPTS):
-        """Initializes port by resetting device and gettings supported PIDs. """
+class OBDDevice(object):
+    """Abstract communication with OBD-II device."""
+
+    _LOGGER = getLogger(__name__ + 'OBDDevice')
+
+    def __init__(self, serial_port, SERTIMEOUT, RECONNATTEMPTS):
+        """Reset the device and retrieve supported PIDs"""
         self.ELMver = "Unknown"
         # state SERIAL is 1 connected, 0 disconnected (connection failed)
         self.state = 1
         self.port = None
 
-        self._notify_window = _notify_window
-        debug_display(
-            self._notify_window, 1, "Opening interface (serial port)")
+        self._LOGGER.info("Opening interface (serial port)")
 
         try:
             self.port = serial.Serial(serial_port,
@@ -64,9 +67,11 @@ class OBDDevice:
             self.state = 0
             return None
 
-        debug_display(
-            self._notify_window, 1, "Interface successfully " + self.port.portstr + " opened")
-        debug_display(self._notify_window, 1, "Connecting to ECU...")
+        self._LOGGER.info(
+            "Interface %s successfully opened",
+            self.port.portstr,
+            )
+        self._LOGGER.info("Connecting to ECU...")
 
         try:
             self.send_command("atz")   # initialize
@@ -80,10 +85,11 @@ class OBDDevice:
             self.state = 0
             return None
 
-        debug_display(self._notify_window, 2, "atz response:" + self.ELMver)
+        self._LOGGER.info("atz response:" + self.ELMver)
+
         self.send_command("ate0")  # echo off
-        debug_display(
-            self._notify_window, 2, "ate0 response:" + self.get_result())
+        self._LOGGER.debug("ate0 response:" + self.get_result())
+
         self.send_command("0100")
         ready = self.get_result()
 
@@ -91,7 +97,7 @@ class OBDDevice:
             self.state = 0
             return None
 
-        debug_display(self._notify_window, 2, "0100 response:" + ready)
+        self._LOGGER.info("0100 response:" + ready)
         return None
 
     def close(self):
@@ -112,7 +118,7 @@ class OBDDevice:
             for c in cmd:
                 self.port.write(c)
             self.port.write("\r\n")
-            #debug_display(self._notify_window, 3, "Send command:" + cmd)
+            self._LOGGER.debug("Send command:" + cmd)
 
     def interpret_result(self, code):
         """Internal use only: not a public interface"""
@@ -166,12 +172,12 @@ class OBDDevice:
                 if buffer != "" or c != ">":
                     buffer = buffer + c
 
-            #debug_display(self._notify_window, 3, "Get result:" + buffer)
+            self._LOGGER.debug("Get result:" + buffer)
             if(buffer == ""):
                 return None
             return buffer
         else:
-            debug_display(self._notify_window, 3, "NO self.port!")
+            self._LOGGER.error("NO self.port!")
         return None
 
     # get sensor value from command

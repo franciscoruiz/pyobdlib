@@ -32,7 +32,7 @@ class OBD_Recorder():
         portnames = ['COM8']
         print portnames
         for port in portnames:
-            self.port = pyobdlib.io.OBDDevice(port, None, 2, 2)
+            self.port = pyobdlib.io.OBDDevice(port, 2, 2)
             if(self.port.state == 0):
                 self.port.close()
                 self.port = None
@@ -41,24 +41,24 @@ class OBD_Recorder():
 
         if(self.port):
             print "Connected to "+self.port.port.name
-            
+
     def is_connected(self):
         return self.port
-        
+
     def add_log_item(self, item):
         for index, e in enumerate(pyobdlib.sensors.SENSORS):
             if(item == e.shortname):
                 self.sensorlist.append(index)
                 print "Logging item: "+e.name
                 break
-            
-            
+
+
     def record_data(self):
         if(self.port is None):
             return None
-        
+
         print "Logging started"
-        
+
         while 1:
             #localtime = datetime.now()
             #current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.microsecond)
@@ -73,7 +73,7 @@ class OBD_Recorder():
             gear = self.calculate_gear(results["rpm"], results["speed"])
             log_string = log_string + "," + str(gear)
             self.log_file.write(log_string+"\n")
-            
+
     def calculate_gear(self, rpm, speed):
         if speed == "" or speed == 0:
             return 0
@@ -82,19 +82,19 @@ class OBD_Recorder():
 
         rps = rpm/60
         mps = (speed*1.609*1000)/3600
-        
+
         primary_gear = 85/46 #street triple
         final_drive  = 47/16
-        
+
         tyre_circumference = 1.978 #meters
 
         current_gear_ratio = (rps*tyre_circumference)/(mps*primary_gear*final_drive)
-        
+
         print current_gear_ratio
-        gear = min((abs(current_gear_ratio - i), i) for i in self.gear_ratios)[1] 
+        gear = min((abs(current_gear_ratio - i), i) for i in self.gear_ratios)[1]
         return gear
-            
-            
+
+
 logitems = ["rpm", "speed", "throttle_pos", "load"]
 o = OBD_Recorder('logs', logitems)
 o.connect()

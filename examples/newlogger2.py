@@ -20,31 +20,31 @@ conn = sqlite3.connect('obdlog.db')
 
 try:
     c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS Log 
+    c.execute("""CREATE TABLE IF NOT EXISTS Log
                  (id INTEGER PRIMARY KEY, timestamp TEXT, speed REAL, rpm REAL, load REAL, throttle REAL, coolant REAL)""")
     conn.commit()
     del c
-    
+
     # Set up OBD port
-    port = pyobdlib.io.OBDDevice(PORTNAME, None, 2, 2)
+    port = pyobdlib.io.OBDDevice(PORTNAME, 2, 2)
     if port.state == 0:
         port.close()
         port = None
         raise Exception("Cannot connect to %s" % PORTNAME)
-		
+
     for sensor_sname in LOG_SENSORS:
         for index, e in enumerate(pyobdlib.sensors.SENSORS):
             if sensor_sname == e.shortname:
                 sensor_idxs.append(index)
                 print "Logging item: "+e.name
                 break
-        
+
     # Logging
     print "Logging started"
-    
+
     while True:
         now_utc = datetime.utcnow()
-        
+
         results = {}
         results["timestamp"] = str(now_utc)
         for index in sensor_idxs:
@@ -53,23 +53,23 @@ try:
 
         # Only save if the engine is running (rpm > 0)
         if results["rpm"] > 0 and results["rpm"] != "NODATA":
-            tup = (results["timestamp"], 
-                   results["speed"], 
-                   results["rpm"], 
-                   results["load"], 
-                   results["throttle_pos"], 
+            tup = (results["timestamp"],
+                   results["speed"],
+                   results["rpm"],
+                   results["load"],
+                   results["throttle_pos"],
                    results["temp"])
-                   
+
             # Save row
             c = conn.cursor()
             c.execute("INSERT INTO Log (timestamp,speed,rpm,load,throttle,coolant) VALUES (?,?,?,?,?,?)", tup)
             conn.commit()
-        
+
             print tup
-        
+
         # Sleep for a moment, as it is REALLY fast
         time.sleep(0.2)
-    
+
 finally:
     print "Finished"
     conn.close()

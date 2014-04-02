@@ -22,7 +22,7 @@ class OBD_Capture():
 		#portnames = ['COM6']
         print portnames
         for port in portnames:
-            self.port = pyobdlib.io.OBDDevice(port, None, 2, 2)
+            self.port = pyobdlib.io.OBDDevice(port, 2, 2)
             if(self.port.state == 0):
                 self.port.close()
                 self.port = None
@@ -31,14 +31,14 @@ class OBD_Capture():
 
         if(self.port):
             print "Connected to "+self.port.port.name
-            
+
     def is_connected(self):
         return self.port
-        
+
     def capture_data(self):
 
         #Find supported sensors - by getting PIDs from OBD
-        # its a string of binary 01010101010101 
+        # its a string of binary 01010101010101
         # 1 means the sensor is supported
         self.supp = self.port.sensor(0)[1]
         self.supp += self.port.sensor(32)[1]
@@ -54,12 +54,12 @@ class OBD_Capture():
                 self.supportedSensorList.append([i+1, pyobdlib.sensors.SENSORS[i+1]])
             else:
                 self.unsupportedSensorList.append([i+1, pyobdlib.sensors.SENSORS[i+1]])
-        
+
         for supportedSensor in self.supportedSensorList:
-            print "supported sensor index = " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname)        
-        
+            print "supported sensor index = " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname)
+
         time.sleep(3)
-        
+
         if(self.port is None):
             return None
 

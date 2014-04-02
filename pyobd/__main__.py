@@ -75,8 +75,6 @@ def EVT_RESULT(win, func, id):
     """Define Result Event."""
     win.Connect(-1, -1, id, func)
 
-# event pro akutalizaci Trace tabu
-
 
 class ResultEvent(wx.PyEvent):
 
@@ -130,8 +128,17 @@ class TestEvent(wx.PyEvent):
         self.SetEventType(EVT_TESTS_ID)
         self.data = data
 
-# defines notification event for debug tracewindow
-from debugEvent import *
+
+EVT_DEBUG_ID = 1010
+
+class _DebugEvent(wx.PyEvent):
+    """Simple event to carry arbitrary result data."""
+
+    def __init__(self, data):
+        """Init Result Event."""
+        wx.PyEvent.__init__(self)
+        self.SetEventType(EVT_DEBUG_ID)
+        self.data = data
 
 
 class MyApp(wx.App):
@@ -158,7 +165,10 @@ class MyApp(wx.App):
 
         def initCommunication(self):
             self.port = pyobdlib.io.OBDDevice(
-                self.portName, self._notify_window, self.SERTIMEOUT, self.RECONNATTEMPTS)
+                self.portName,
+                self.SERTIMEOUT,
+                self.RECONNATTEMPTS,
+                )
 
             if self.port.state == 0:  # Cant open serial port
                 return None
@@ -171,7 +181,7 @@ class MyApp(wx.App):
 
             wx.PostEvent(self._notify_window, ResultEvent([0, 0, "X"]))
             wx.PostEvent(
-                self._notify_window, DebugEvent([1, "Communication initialized..."]))
+                self._notify_window, _DebugEvent([1, "Communication initialized..."]))
 
             for i in range(1, len(self.supp)):
                 # put X in coloum if PID is supported
@@ -534,13 +544,13 @@ http://www.obdtester.com/
 http://www.secons.com/
 
   PyOBD is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by the Free Software Foundation; 
+it under the terms of the GNU General Public License as published by the Free Software Foundation;
 either version 2 of the License, or (at your option) any later version.
 
-  PyOBD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MEHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-See the GNU General Public License for more details. You should have received a copy of 
-the GNU General Public License along with PyOBD; if not, write to 
+  PyOBD is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MEHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details. You should have received a copy of
+the GNU General Public License along with PyOBD; if not, write to
 the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
