@@ -1,8 +1,8 @@
 ###########################################################################
-# obd_sensors.py
 #
 # Copyright 2004 Donour Sizemore (donour@uchicago.edu)
 # Copyright 2009 Secons Ltd. (www.obdtester.com)
+# Copyright 2014 Francisco Ruiz
 #
 # This file is part of pyOBD.
 #
@@ -20,6 +20,7 @@
 # along with pyOBD; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###########################################################################
+
 pcodes = {
     "P0001": "Fuel Volume Regulator Control Circuit/Open",
     "P0002": "Fuel Volume Regulator Control Circuit Range/Performance",
@@ -2113,7 +2114,7 @@ pcode_classes = {
     "P19XX": "Transmission",
     }
 
-ptest= [
+ptest = [
     "DTCs:",
     "MIL:",
     #A

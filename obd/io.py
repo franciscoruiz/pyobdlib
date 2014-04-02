@@ -1,8 +1,8 @@
 ###########################################################################
-# odb_io.py
 #
 # Copyright 2004 Donour Sizemore (donour@uchicago.edu)
 # Copyright 2009 Secons Ltd. (www.obdtester.com)
+# Copyright 2014 Francisco Ruiz
 #
 # This file is part of pyOBD.
 #
@@ -38,14 +38,12 @@ CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
 
 
-
-
 class OBDDevice(object):
     """Abstract communication with OBD-II device."""
 
     _LOGGER = getLogger(__name__ + 'OBDDevice')
 
-    def __init__(self, serial_port, SERTIMEOUT, RECONNATTEMPTS):
+    def __init__(self, serial_port, SERTIMEOUT):
         """Reset the device and retrieve supported PIDs"""
         self.ELMver = "Unknown"
         # state SERIAL is 1 connected, 0 disconnected (connection failed)
@@ -56,10 +54,7 @@ class OBDDevice(object):
 
         try:
             self.port = serial.Serial(serial_port,
-                                      38400,  # baud rate
-                                      parity=serial.PARITY_NONE,
-                                      stopbits=1,
-                                      bytesize=8,
+                                      baudrate=38400,
                                       timeout=SERTIMEOUT)
 
         except serial.SerialException as e:
