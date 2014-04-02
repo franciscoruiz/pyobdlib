@@ -1,16 +1,10 @@
-import os, sys, inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
-
-import pyobdlib.io
-import serial
-import platform
-import pyobdlib.sensors
 from datetime import datetime
 import time
 
 from pyobdlib.utils import scan_serial
+import pyobdlib.io
+import pyobdlib.sensors
+
 
 class OBD_Capture():
     def __init__(self):

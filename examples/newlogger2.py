@@ -1,16 +1,10 @@
-import os, sys, inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
-
-import platform
 from datetime import datetime
-import time
 import sqlite3
-import serial
+import time
+
 import pyobdlib.io
 import pyobdlib.sensors
-from pyobdlib.utils import scan_serial
+
 
 PORTNAME = "COM8"
 LOG_SENSORS = ["rpm", "speed", "throttle_pos", "load", "temp"]
