@@ -22,7 +22,6 @@
 ###########################################################################
 
 from logging import getLogger
-import string
 import time
 
 import serial
@@ -127,12 +126,12 @@ class OBDDevice(object):
             print "boguscode?" + code
 
         # get the first thing returned, echo should be off
-        code = string.split(code, "\r")
+        code = code.split("\r")
         code = code[0]
 
         # remove whitespace
-        code = string.split(code)
-        code = string.join(code, "")
+        code = code.split()
+        code = ''.join(code)
 
         # cables can behave differently
         if code[:6] == "NODATA":  # there is no such sensor
@@ -295,7 +294,7 @@ class OBDDevice(object):
         if file:
             data = self.sensor(sensor_index)
             file.write("%s     \t%s(%s)\n" %
-                      ("Time", string.strip(data[0]), data[2]))
+                      ("Time", data[0].strip, data[2]))
             while 1:
                 now = time.time()
                 data = self.sensor(sensor_index)
