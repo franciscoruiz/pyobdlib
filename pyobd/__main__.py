@@ -35,7 +35,7 @@ sys.path.insert(0, parentdir)
 # wxversion.select("2.6")
 import wx
 
-import pyobdlib.io  # OBD2 funcs
+import obd.io
 # import os #os.environ
 
 import threading
@@ -46,9 +46,9 @@ import time
 import ConfigParser  # safe application configuration
 import webbrowser  # open browser from python
 
-from pyobdlib.obd2_codes import pcodes
-from pyobdlib.obd2_codes import ptest
-from pyobdlib.utils import scan_serial
+from obd.obd2_codes import pcodes
+from obd.obd2_codes import ptest
+from obd.utils import scan_serial
 
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 
@@ -164,7 +164,7 @@ class MyApp(wx.App):
             threading.Thread.__init__(self)
 
         def initCommunication(self):
-            self.port = pyobdlib.io.OBDDevice(
+            self.port = obd.io.OBDDevice(
                 self.portName,
                 self.SERTIMEOUT,
                 self.RECONNATTEMPTS,
@@ -345,8 +345,8 @@ class MyApp(wx.App):
         self.sensors.InsertColumn(
             1, "Sensor", format=wx.LIST_FORMAT_RIGHT, width=250)
         self.sensors.InsertColumn(2, "Value")
-        for i in range(0, len(pyobdlib.sensors.SENSORS)):
-            s = pyobdlib.sensors.SENSORS[i].name
+        for i in range(0, len(obd.sensors.SENSORS)):
+            s = obd.sensors.SENSORS[i].name
             self.sensors.InsertStringItem(i, "")
             self.sensors.SetStringItem(i, 1, s)
 
@@ -624,7 +624,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
 
         root = tree.AddRoot("Code Reference")
         proot = tree.AppendItem(root, "Powertrain (P) Codes")
-        codes = pyobdlib.io.pcodes.keys()
+        codes = obd.io.pcodes.keys()
         codes.sort()
         group = ""
         for c in codes:
@@ -632,10 +632,10 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 group_root = tree.AppendItem(proot, c[:3] + "XX")
                 group = c[:3]
             leaf = tree.AppendItem(group_root, c)
-            tree.AppendItem(leaf, pyobdlib.io.pcodes[c])
+            tree.AppendItem(leaf, obd.io.pcodes[c])
 
         uroot = tree.AppendItem(root, "Network (U) Codes")
-        codes = pyobdlib.io.ucodes.keys()
+        codes = obd.io.ucodes.keys()
         codes.sort()
         group = ""
         for c in codes:
@@ -643,7 +643,7 @@ the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  0211
                 group_root = tree.AppendItem(uroot, c[:3] + "XX")
                 group = c[:3]
             leaf = tree.AppendItem(group_root, c)
-            tree.AppendItem(leaf, pyobdlib.io.ucodes[c])
+            tree.AppendItem(leaf, obd.io.ucodes[c])
 
         diag.SetSize((400, 500))
         diag.Show(True)

@@ -1,9 +1,9 @@
 from datetime import datetime
 import time
 
-from pyobdlib.utils import scan_serial
-import pyobdlib.io
-import pyobdlib.sensors
+from obd.io import OBDDevice
+from obd.sensors import SENSORS
+from obd.utils import scan_serial
 
 
 class OBD_Recorder():
@@ -12,7 +12,7 @@ class OBD_Recorder():
         self.sensorlist = []
 
         localtime = time.localtime(time.time())
-        filename = path+"log-"+str(localtime[0])+"-"+str(localtime[1])+"-"+str(localtime[2])+"-"+str(localtime[3])+"-"+str(localtime[4])+"-"+str(localtime[5])+".log"
+        filename = path + "log-" + str(localtime[0]) + "-" + str(localtime[1]) + "-" + str(localtime[2]) + "-" + str(localtime[3]) + "-" + str(localtime[4]) + "-" + str(localtime[5]) + ".log"
 
         self.log_file = open(filename, "w", 128)
         self.log_file.write("Time,RPM,km/h,Throttle,Load,CoolantTemp\n");
@@ -20,13 +20,13 @@ class OBD_Recorder():
         for item in log_items:
             self.add_log_item(item)
 
-    def connect(self, portname = None):
+    def connect(self, portname=None):
         if portname is None:
             # Scan ports and try connecting
             portnames = scan_serial()
             print portnames
             for port in portnames:
-                self.port = pyobdlib.io.OBDDevice(port, 2, 2)
+                self.port = OBDDevice(port, 2, 2)
                 if(self.port.state == 0):
                     self.port.close()
                     self.port = None
@@ -34,22 +34,22 @@ class OBD_Recorder():
                     break
         else:
             # Connect to the specified port
-            self.port = pyobdlib.io.OBDDevice(portname, 2, 2)
+            self.port = OBDDevice(portname, 2, 2)
             if(self.port.state == 0):
                 self.port.close()
                 self.port = None
 
         if(self.port):
-            print "Connected to "+self.port.port.name
+            print "Connected to " + self.port.port.name
 
     def is_connected(self):
         return self.port
 
     def add_log_item(self, item):
-        for index, e in enumerate(pyobdlib.sensors.SENSORS):
+        for index, e in enumerate(SENSORS):
             if(item == e.shortname):
                 self.sensorlist.append(index)
-                print "Logging item: "+e.name
+                print "Logging item: " + e.name
                 break
 
 
@@ -67,10 +67,10 @@ class OBD_Recorder():
             results = {}
             for index in self.sensorlist:
                 (name, value, unit) = self.port.sensor(index)
-                log_string = log_string + ","+str(value)
-                results[pyobdlib.sensors.SENSORS[index].shortname] = value;
+                log_string = log_string + "," + str(value)
+                results[SENSORS[index].shortname] = value;
 
-            self.log_file.write(log_string+"\n")
+            self.log_file.write(log_string + "\n")
 
             # Sleep for a moment, as it is REALLY fast
             time.sleep(0.2)

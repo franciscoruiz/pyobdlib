@@ -2,8 +2,8 @@ from datetime import datetime
 import sqlite3
 import time
 
-import pyobdlib.io
-import pyobdlib.sensors
+from obd.io import OBDDevice
+from obd.sensors import SENSORS
 
 
 PORTNAME = "COM8"
@@ -20,17 +20,17 @@ try:
     del c
 
     # Set up OBD port
-    port = pyobdlib.io.OBDDevice(PORTNAME, 2, 2)
+    port = OBDDevice(PORTNAME, 2, 2)
     if port.state == 0:
         port.close()
         port = None
         raise Exception("Cannot connect to %s" % PORTNAME)
 
     for sensor_sname in LOG_SENSORS:
-        for index, e in enumerate(pyobdlib.sensors.SENSORS):
+        for index, e in enumerate(SENSORS):
             if sensor_sname == e.shortname:
                 sensor_idxs.append(index)
-                print "Logging item: "+e.name
+                print "Logging item: " + e.name
                 break
 
     # Logging
@@ -43,7 +43,7 @@ try:
         results["timestamp"] = str(now_utc)
         for index in sensor_idxs:
             (name, value, unit) = port.sensor(index)
-            results[pyobdlib.sensors.SENSORS[index].shortname] = value;
+            results[SENSORS[index].shortname] = value;
 
         # Only save if the engine is running (rpm > 0)
         if results["rpm"] > 0 and results["rpm"] != "NODATA":
@@ -67,7 +67,3 @@ try:
 finally:
     print "Finished"
     conn.close()
-
-
-
-

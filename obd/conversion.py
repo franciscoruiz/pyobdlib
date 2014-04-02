@@ -1,4 +1,4 @@
-# pyobdlib
+# obd
 # Copyright (C) 2004 Donour Sizemore
 # Copyright (C) 2009 Secons Ltd.
 # Copyright (C) 2013 Mark Embling

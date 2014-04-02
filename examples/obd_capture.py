@@ -1,9 +1,9 @@
 from datetime import datetime
 import time
 
-from pyobdlib.utils import scan_serial
-import pyobdlib.io
-import pyobdlib.sensors
+from obd.io import OBDDevice
+from obd.sensors import SENSORS
+from obd.utils import scan_serial
 
 
 class OBD_Capture():
@@ -16,7 +16,7 @@ class OBD_Capture():
         portnames = ['COM8']
         print portnames
         for port in portnames:
-            self.port = pyobdlib.io.OBDDevice(port, 2, 2)
+            self.port = OBDDevice(port, 2, 2)
             if(self.port.state == 0):
                 self.port.close()
                 self.port = None
@@ -24,7 +24,7 @@ class OBD_Capture():
                 break
 
         if(self.port):
-            print "Connected to "+self.port.port.name
+            print "Connected to " + self.port.port.name
 
     def is_connected(self):
         return self.port
@@ -42,9 +42,9 @@ class OBD_Capture():
         for i in range(0, len(self.supp)):
             if self.supp[i] == "1":
                 # store index of sensor and sensor object
-                self.supportedSensorList.append([i+1, pyobdlib.sensors.SENSORS[i+1]])
+                self.supportedSensorList.append([i + 1, SENSORS[i + 1]])
             else:
-                self.unsupportedSensorList.append([i+1, pyobdlib.sensors.SENSORS[i+1]])
+                self.unsupportedSensorList.append([i + 1, SENSORS[i + 1]])
 
         for supportedSensor in self.supportedSensorList:
             print "supported sensor index = " + str(supportedSensor[0]) + " " + str(supportedSensor[1].shortname)
@@ -58,7 +58,7 @@ class OBD_Capture():
         try:
             while True:
                 localtime = datetime.now()
-                current_time = str(localtime.hour)+":"+str(localtime.minute)+":"+str(localtime.second)+"."+str(localtime.microsecond)
+                current_time = str(localtime.hour) + ":" + str(localtime.minute) + ":" + str(localtime.second) + "." + str(localtime.microsecond)
                 log_string = current_time + "\n"
                 results = {}
                 for supportedSensor in self.supportedSensorList:

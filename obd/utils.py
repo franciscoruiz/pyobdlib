@@ -1,4 +1,4 @@
-# pyobdlib
+# obd
 # Copyright (C) 2004 Donour Sizemore
 # Copyright (C) 2009 Secons Ltd.
 # Copyright (C) 2013 Mark Embling
@@ -17,12 +17,14 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import serial
+
 import platform
+
+import serial
 
 
 def scan_serial():
-    """Scan for available serial ports and return a list of available names"""
+    """Scan for available obd ports and return a list of available names"""
 
     available_ports = []
 

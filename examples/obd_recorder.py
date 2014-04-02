@@ -1,9 +1,9 @@
 from datetime import datetime
 import time
 
-from pyobdlib.utils import scan_serial
-import pyobdlib.io
-import pyobdlib.sensors
+from obd.io import OBDDevice
+from obd.sensors import SENSORS
+from obd.utils import scan_serial
 
 
 class OBD_Recorder():
@@ -26,7 +26,7 @@ class OBD_Recorder():
         portnames = ['COM8']
         print portnames
         for port in portnames:
-            self.port = pyobdlib.io.OBDDevice(port, 2, 2)
+            self.port = OBDDevice(port, 2, 2)
             if(self.port.state == 0):
                 self.port.close()
                 self.port = None
@@ -40,7 +40,7 @@ class OBD_Recorder():
         return self.port
 
     def add_log_item(self, item):
-        for index, e in enumerate(pyobdlib.sensors.SENSORS):
+        for index, e in enumerate(SENSORS):
             if(item == e.shortname):
                 self.sensorlist.append(index)
                 print "Logging item: "+e.name
@@ -62,7 +62,7 @@ class OBD_Recorder():
             for index in self.sensorlist:
                 (name, value, unit) = self.port.sensor(index)
                 log_string = log_string + ","+str(value)
-                results[pyobdlib.sensors.SENSORS[index].shortname] = value;
+                results[SENSORS[index].shortname] = value;
 
             gear = self.calculate_gear(results["rpm"], results["speed"])
             log_string = log_string + "," + str(gear)

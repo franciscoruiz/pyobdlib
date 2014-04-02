@@ -1,4 +1,4 @@
-# pyobdlib
+# obd
 # Copyright (C) 2004 Donour Sizemore
 # Copyright (C) 2009 Secons Ltd.
 # Copyright (C) 2013 Mark Embling
@@ -16,8 +16,17 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-from .conversion import *
+from obd.conversion import dtc_decode
+from obd.conversion import noop
+from obd.conversion import to_bitstring
+from obd.conversion import to_fuel_trim_percent
+from obd.conversion import to_int
+from obd.conversion import to_kpa_gauge
+from obd.conversion import to_maf_grams_sec
+from obd.conversion import to_percent_scale
+from obd.conversion import to_rpm
+from obd.conversion import to_temp_c
+from obd.conversion import to_timing_advance
 
 
 class Sensor:
